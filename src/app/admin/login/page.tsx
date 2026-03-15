@@ -39,27 +39,6 @@ export default function AdminLoginPage() {
     router.refresh();
   }
 
-  async function handleSignUp(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setMessage("");
-    setLoading(true);
-
-    const supabase = createClient();
-    const { error: err } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: `${location.origin}/auth/callback` },
-    });
-
-    setLoading(false);
-    if (err) {
-      setError(err.message);
-      return;
-    }
-    setMessage("Check your email for the confirmation link.");
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 py-12">
       <Container size="sm">
@@ -99,22 +78,10 @@ export default function AdminLoginPage() {
             {error && (
               <p className="text-sm text-destructive">{error}</p>
             )}
-            {message && (
-              <p className="text-sm text-primary">{message}</p>
-            )}
-            <div className="flex gap-2">
-              <Button type="submit" className="flex-1" disabled={loading}>
-                {loading ? "..." : "Login"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleSignUp}
-                disabled={loading}
-              >
-                Sign Up
-              </Button>
-            </div>
+            {message && <p className="text-sm text-primary">{message}</p>}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "..." : "Login"}
+            </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground">

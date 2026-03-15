@@ -12,13 +12,15 @@ import { RelatedArticles } from "@/components/article/related-articles";
 import { ReadingProgress } from "@/components/article/reading-progress";
 import { AdSense } from "@/components/ads/adsense";
 import { AffiliateSection } from "@/components/ads/affiliate-section";
-import { getArticleBySlug, getRelatedArticles, hasEnglishVersion, getEnglishVersionSlug } from "@/lib/db/articles";
+import { getArticleBySlug, getRelatedArticles, hasEnglishVersion, getEnglishVersionSlug, getPublishedArticleSlugs } from "@/lib/db/articles";
 import { ArticleSchema } from "@/components/seo/article-schema";
 import { ArticleViewTracker } from "@/components/article/article-view-tracker";
 import { getTopArticlesByViews } from "@/lib/db/analytics";
 import { ArticleSidebar } from "@/components/article/article-sidebar";
 import { ArticleLeftSidebar } from "@/components/article/article-left-sidebar";
 import { BLUR_DATA_URL } from "@/lib/constants";
+
+export const revalidate = 86400;
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -82,6 +84,11 @@ export async function generateMetadata({ params }: ArticlePageProps) {
       description,
     },
   };
+}
+
+export async function generateStaticParams() {
+  const slugs = await getPublishedArticleSlugs(5000, "hi");
+  return slugs.map((a) => ({ slug: a.slug }));
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {

@@ -3,11 +3,12 @@ import Image from "next/image";
 import { BookOpen, PenLine, ClipboardList, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
+import { HeroScrollingCards, type HeroTickerItem } from "./hero-scrolling-cards";
 
 const HERO_IMAGE = "/images/hero-theme.webp";
 const EN_BASE = "/en";
 
-export function EnHero() {
+export function EnHero({ trendingItems = [] }: { trendingItems?: HeroTickerItem[] }) {
   return (
     <section
       className="relative flex min-h-[75vh] sm:min-h-[85vh] items-center justify-center overflow-hidden"
@@ -93,6 +94,9 @@ export function EnHero() {
               </Link>
             </Button>
           </div>
+        </div>
+        <div className="mx-auto mt-12 max-w-6xl overflow-hidden">
+          <HeroScrollingCards items={trendingItems} />
         </div>
       </Container>
     </section>

@@ -62,8 +62,8 @@ export function ArticleCard({
       }}
       className={cn("group", className)}
     >
-      <Card className="h-full overflow-hidden border-border/60 bg-card hover:border-primary/30 hover:shadow-lg transition-all duration-300">
-        <div className="relative aspect-video overflow-hidden bg-muted">
+      <Card className="flex h-full flex-col gap-3 overflow-hidden border-border/60 bg-card pt-0 hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+        <div className="relative aspect-video shrink-0 overflow-hidden bg-muted rounded-t-xl">
           <Link href={`${toArticles}/${encodeURIComponent(slug)}`} className="block absolute inset-0 z-0">
             {featuredImage ? (
               featuredImage.startsWith("data:") ? (
@@ -97,7 +97,7 @@ export function ArticleCard({
             />
           </div>
         </div>
-        <CardHeader>
+        <CardHeader className="min-h-0 flex-1">
           <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
             <Link href={`${toArticles}/${encodeURIComponent(slug)}`} className="hover:opacity-90">
               {title}
@@ -105,7 +105,7 @@ export function ArticleCard({
           </CardTitle>
           <CardDescription className="line-clamp-2">{excerpt}</CardDescription>
         </CardHeader>
-        <CardFooter className="flex items-center justify-between pt-0">
+        <CardFooter className="mt-auto shrink-0 flex items-center justify-between py-3">
           {publishedAt && (
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Calendar className="size-3.5" />

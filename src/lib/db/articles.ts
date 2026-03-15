@@ -1,11 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { Article, ArticleWithCategory, ArticleLanguage } from "./types";
+
+function createStaticSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    throw new Error(
+      "Missing Supabase env. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local"
+    );
+  }
+  return createSupabaseClient(url, key);
+}
 
 export async function getPublishedArticleSlugs(
   limit = 5000,
   language: ArticleLanguage = "hi"
 ) {
-  const supabase = await createClient();
+  const supabase = createStaticSupabase();
   const { data, error } = await supabase
     .from("articles")
     .select("slug, published_at, language")
@@ -23,7 +35,7 @@ export async function getPublishedArticleSlugs(
 }
 
 export async function getPublishedArticleSlugsAllLanguages(limit = 5000) {
-  const supabase = await createClient();
+  const supabase = createStaticSupabase();
   const { data, error } = await supabase
     .from("articles")
     .select("slug, published_at, language")
@@ -89,6 +101,29 @@ export async function getPublishedArticles(
       publishedAt: row.published_at,
     };
   });
+}
+
+/** Shuffle array in place (Fisher–Yates). */
+function shuffle<T>(arr: T[]): T[] {
+  const out = [...arr];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+/** All (or many) published articles for hero ticker, shuffled randomly. */
+export async function getHeroTickerArticles(
+  limit = 200,
+  language: ArticleLanguage = "hi"
+): Promise<{ title: string; slug: string; featuredImage: string | null }[]> {
+  const articles = await getPublishedArticles(limit, language);
+  return shuffle(articles).map((a) => ({
+    title: a.title,
+    slug: a.slug,
+    featuredImage: a.featuredImage ?? null,
+  }));
 }
 
 export async function getArticleBySlug(

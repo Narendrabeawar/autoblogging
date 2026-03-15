@@ -3,10 +3,11 @@ import Image from "next/image";
 import { BookOpen, PenLine, ClipboardList, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
+import { HeroScrollingCards, type HeroTickerItem } from "./hero-scrolling-cards";
 
 const HERO_IMAGE = "/images/hero-theme.webp";
 
-export function Hero() {
+export function Hero({ trendingItems = [] }: { trendingItems?: HeroTickerItem[] }) {
   return (
     <section
       className="relative flex min-h-[75vh] sm:min-h-[85vh] items-center justify-center overflow-hidden"
@@ -91,6 +92,10 @@ export function Hero() {
               </Link>
             </Button>
           </div>
+        </div>
+        {/* Centered 6xl scrolling cards with fade edges */}
+        <div className="mx-auto mt-12 max-w-6xl overflow-hidden">
+          <HeroScrollingCards items={trendingItems} />
         </div>
       </Container>
     </section>

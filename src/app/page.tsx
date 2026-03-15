@@ -6,13 +6,21 @@ import { ArticleCardSkeletonGrid } from "@/components/article/article-card-skele
 import { CATEGORIES } from "@/lib/constants";
 import { FeaturedArticles } from "@/app/home/featured-articles";
 import { Hero } from "@/components/home/hero";
+import { getHeroTickerArticles } from "@/lib/db/articles";
 
-export default function Home() {
+export default async function Home() {
+  const tickerArticles = await getHeroTickerArticles(200, "hi");
+  const trendingItems = tickerArticles.map((a) => ({
+    title: a.title,
+    href: `/articles/${encodeURIComponent(a.slug)}`,
+    imageUrl: a.featuredImage,
+  }));
+
   return (
     <>
-      <Hero />
+      <Hero trendingItems={trendingItems} />
 
-      <section id="categories" className="py-16 sm:py-24 bg-muted/30">
+      <section id="categories" className="pt-10 sm:pt-14 pb-16 sm:pb-24 bg-muted/30">
         <Container>
           <SectionHeader
             title="Categories"
@@ -37,7 +45,7 @@ export default function Home() {
 
       <Suspense
         fallback={
-          <section className="py-16 sm:py-24">
+          <section className="pt-10 sm:pt-14 pb-16 sm:pb-24">
             <Container>
               <SectionHeader
                 title="Featured Articles"

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Heart } from "lucide-react";
+import { Menu, X, Heart, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/container";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
@@ -122,6 +122,12 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="hidden md:inline-flex gap-1.5" asChild>
+              <Link href="/admin">
+                <LayoutDashboard className="size-4" aria-hidden />
+                Admin
+              </Link>
+            </Button>
             <ThemeToggle />
             <Button
               variant="ghost"
@@ -202,10 +208,16 @@ export function Navbar() {
                     <Link href="/en" onClick={() => setMobileOpen(false)}>English</Link>
                   </Button>
                 </div>
-                <div className="mt-3">
+                <div className="mt-3 flex flex-col gap-2">
                   <Button asChild className="w-full" size="lg">
                     <Link href={isEn ? "/en/articles" : "/articles"} onClick={() => setMobileOpen(false)}>
                       Read Articles
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full" size="lg">
+                    <Link href="/admin" onClick={() => setMobileOpen(false)}>
+                      <LayoutDashboard className="size-4 mr-2" aria-hidden />
+                      Admin
                     </Link>
                   </Button>
                 </div>

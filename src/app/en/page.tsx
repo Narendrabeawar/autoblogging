@@ -7,16 +7,24 @@ import { CategoryCard } from "@/components/article/category-card";
 import { ArticleCard } from "@/components/article/article-card";
 import { EnHero } from "@/components/home/en-hero";
 import { CATEGORIES } from "@/lib/constants";
-import { getPublishedArticles } from "@/lib/db/articles";
+import { getPublishedArticles, getHeroTickerArticles } from "@/lib/db/articles";
 
 const EN_BASE = "/en";
 
 export default async function EnHome() {
-  const featuredArticles = (await getPublishedArticles(6, "en")) ?? [];
+  const [featuredArticles, tickerArticles] = await Promise.all([
+    getPublishedArticles(6, "en"),
+    getHeroTickerArticles(200, "en"),
+  ]);
+  const trendingItems = tickerArticles.map((a) => ({
+    title: a.title,
+    href: `${EN_BASE}/articles/${encodeURIComponent(a.slug)}`,
+    imageUrl: a.featuredImage,
+  }));
 
   return (
     <>
-      <EnHero />
+      <EnHero trendingItems={trendingItems} />
 
       <section className="py-16 sm:py-24 bg-muted/30">
         <Container>

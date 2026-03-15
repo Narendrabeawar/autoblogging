@@ -11,7 +11,7 @@ export async function FeaturedArticles() {
   const featuredArticles = (await getPublishedArticles(6)) ?? [];
 
   return (
-    <section className="py-16 sm:py-24">
+    <section className="pt-10 sm:pt-14 pb-16 sm:pb-24">
       <Container>
         <SectionHeader
           title="Featured Articles"

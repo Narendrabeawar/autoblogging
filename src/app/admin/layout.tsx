@@ -83,7 +83,9 @@ export default async function AdminLayout({
               </nav>
             </div>
           </header>
-          <main className="p-4 lg:p-8">{children}</main>
+          <main className="p-4 lg:p-8">
+            <div className="mx-auto w-full max-w-4xl">{children}</div>
+          </main>
         </>
       ) : (
         <>{children}</>

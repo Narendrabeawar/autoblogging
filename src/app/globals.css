@@ -180,3 +180,32 @@
     @apply text-xl font-semibold mt-6 mb-2;
   }
 }
+
+/* Loading: train approaching (person waiting) */
+@keyframes train-approach {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateX(-55px);
+    opacity: 1;
+  }
+}
+.animate-train-approach {
+  animation: train-approach 2s ease-in-out infinite;
+}
+
+/* Hero ticker: right-to-left scrolling (one full width = 50% of total) */
+@keyframes hero-ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.animate-hero-ticker {
+  animation: hero-ticker 55s linear infinite;
+}
