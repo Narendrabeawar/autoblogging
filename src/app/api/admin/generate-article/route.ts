@@ -20,6 +20,13 @@ export async function POST(request: Request) {
   const categorySlug = body.categorySlug ?? "loneliness";
   const language =
     body.language === "both" ? "both" : body.language === "en" ? "en" : "hi";
+  const autoPublish = body.autoPublish === true;
+  const targetWords =
+    typeof body.targetWords === "number"
+      ? body.targetWords
+      : body.targetWords
+      ? parseInt(String(body.targetWords), 10)
+      : undefined;
 
   if (!topic) {
     return NextResponse.json(
@@ -51,7 +58,8 @@ export async function POST(request: Request) {
     const article = await generateArticle(
       topic,
       categoryNames[categorySlug] ?? "Loneliness",
-      genLang
+      genLang,
+      targetWords
     );
 
     if (!article) {
@@ -77,6 +85,7 @@ export async function POST(request: Request) {
         (await generateArticleImage(article.title, "hope")) ?? null;
     }
 
+    const nowIso = new Date().toISOString();
     const { data: inserted, error } = await supabase
       .from("articles")
       .insert({
@@ -87,7 +96,8 @@ export async function POST(request: Request) {
         seo_title: article.seo_title,
         seo_description: article.seo_description,
         category_id: category?.id ?? null,
-        status: "draft",
+        status: autoPublish ? "published" : "draft",
+        published_at: autoPublish ? nowIso : null,
         tags: [],
         featured_image: featuredImage,
         language: language === "both" ? "hi" : language,
@@ -125,7 +135,8 @@ export async function POST(request: Request) {
           seo_title: translated.seo_title ?? null,
           seo_description: translated.seo_description ?? null,
           category_id: category?.id ?? null,
-          status: "draft",
+          status: autoPublish ? "published" : "draft",
+          published_at: autoPublish ? nowIso : null,
           tags: [],
           featured_image: featuredImage,
           language: "en",

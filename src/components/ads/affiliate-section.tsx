@@ -13,14 +13,14 @@ const AFFILIATE_ITEMS: AffiliateItem[] = [
   {
     title: "Self-Help Books",
     description: "अकेलेपन और motivation पर किताबें",
-    url: "https://www.amazon.in/s?k=self+help+books",
-    affiliateTag: "akelapan-21",
+    url: "https://amzn.to/4cOSYdE",
+    
   },
   {
     title: "Journal & Diary",
     description: "अपने विचार लिखने के लिए journal",
     url: "https://www.amazon.in/s?k=journal+diary",
-    affiliateTag: "akelapan-21",
+    
   },
 ];
 

@@ -36,6 +36,12 @@ export async function POST(request: NextRequest) {
   const generateImage = body.generateImage === true;
   const language =
     body.language === "both" ? "both" : body.language === "en" ? "en" : "hi";
+  const targetWords =
+    typeof body.targetWords === "number"
+      ? body.targetWords
+      : body.targetWords
+      ? parseInt(String(body.targetWords), 10)
+      : undefined;
 
   try {
     const existingTitles = await supabase
@@ -73,7 +79,8 @@ export async function POST(request: NextRequest) {
         const article = await generateArticle(
           topic.topic,
           topic.categoryName,
-          genLang
+          genLang,
+          targetWords
         );
 
         if (!article) {

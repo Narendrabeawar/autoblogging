@@ -20,6 +20,8 @@ export default function GenerateArticlePage() {
   const [categorySlug, setCategorySlug] = useState("loneliness");
   const [language, setLanguage] = useState<"hi" | "en" | "both">("hi");
   const [generateImage, setGenerateImage] = useState(false);
+  const [targetWords, setTargetWords] = useState<string>("");
+  const [autoPublish, setAutoPublish] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -38,6 +40,8 @@ export default function GenerateArticlePage() {
           categorySlug: categorySlug || "loneliness",
           language,
           generateImage,
+          autoPublish,
+          targetWords: targetWords ? Number(targetWords) : undefined,
         }),
       });
 
@@ -82,7 +86,7 @@ export default function GenerateArticlePage() {
             AI Article Generator
           </CardTitle>
           <CardDescription className="text-base">
-            Uses Google Gemini to generate a 1200–1500 word article in Hindi or English. Requires GEMINI_API_KEY in .env.local
+            Uses Google Gemini to generate a 1200–1500 word article in Hindi or English by default. You can also set a custom target word count. Requires GEMINI_API_KEY in .env.local
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
@@ -135,16 +139,50 @@ export default function GenerateArticlePage() {
                 <option value="life-advice">Life Advice</option>
               </select>
             </div>
-            <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border/60 bg-muted/20 p-4">
-              <input
-                type="checkbox"
-                id="generateImage"
-                checked={generateImage}
-                onChange={(e) => setGenerateImage(e.target.checked)}
-                className="size-4 rounded border-input"
+            <div className="space-y-2">
+              <Label htmlFor="targetWords" className="text-sm font-medium">
+                Target words (optional)
+              </Label>
+              <Input
+                id="targetWords"
+                type="number"
+                min={500}
+                max={3000}
+                value={targetWords}
+                onChange={(e) => setTargetWords(e.target.value)}
+                placeholder="e.g. 2000"
+                className="h-11"
               />
-              <span className="text-sm">Generate featured image (Imagen 4, uses extra credits)</span>
-            </label>
+              <p className="text-xs text-muted-foreground">
+                Leave empty for default 1200–1500 words. Approximate only; AI may vary slightly.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-6 rounded-lg border border-border/60 bg-muted/20 p-4">
+              <label className="flex cursor-pointer items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="generateImage"
+                  checked={generateImage}
+                  onChange={(e) => setGenerateImage(e.target.checked)}
+                  className="size-4 rounded border-input"
+                />
+                <span className="text-sm">
+                  Generate featured image (Imagen 4, uses extra credits)
+                </span>
+              </label>
+              <label className="flex cursor-pointer items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="autoPublish"
+                  checked={autoPublish}
+                  onChange={(e) => setAutoPublish(e.target.checked)}
+                  className="size-4 rounded border-input"
+                />
+                <span className="text-sm">
+                  तुरंत publish करें (वरना draft रहेगा)
+                </span>
+              </label>
+            </div>
             {error && (
               <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
                 {error}

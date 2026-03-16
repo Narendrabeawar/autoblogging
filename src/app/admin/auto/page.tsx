@@ -44,6 +44,7 @@ export default function FullAutoPage() {
   const [language, setLanguage] = useState<"hi" | "en" | "both">("hi");
   const [autoPublish, setAutoPublish] = useState(false);
   const [generateImage, setGenerateImage] = useState(false);
+  const [targetWords, setTargetWords] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [results, setResults] = useState<ResultItem[] | null>(null);
@@ -64,6 +65,7 @@ export default function FullAutoPage() {
           language,
           autoPublish,
           generateImage,
+          targetWords: targetWords ? Number(targetWords) : undefined,
         }),
       });
 
@@ -161,6 +163,25 @@ export default function FullAutoPage() {
                 <option value="en">English</option>
                 <option value="both">दोनों (Hindi + English both)</option>
               </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="targetWords" className="text-sm font-medium">
+                Target words per article (optional)
+              </Label>
+              <Input
+                id="targetWords"
+                type="number"
+                min={500}
+                max={3000}
+                value={targetWords}
+                onChange={(e) => setTargetWords(e.target.value)}
+                placeholder="e.g. 2000"
+                className="h-11"
+              />
+              <p className="text-xs text-muted-foreground">
+                Empty = default 1200–1500 words. Approximate only; AI may vary.
+              </p>
             </div>
 
             <div className="flex flex-wrap gap-6 rounded-lg border border-border/60 bg-muted/20 p-4">

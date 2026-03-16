@@ -26,7 +26,7 @@ Article must include:
 - Conclusion with hope and next steps
 - FAQ section with 3-5 questions and answers at the end
 
-Target word count: 1200-1500 words.
+Target word count: {WORD_COUNT} words.
 
 Audience: People feeling lonely or emotionally distressed in India.
 
@@ -60,7 +60,7 @@ Article must include:
 - Conclusion with hope and next steps
 - FAQ section with 3-5 questions and answers at the end
 
-Target word count: 1200-1500 words.
+Target word count: {WORD_COUNT} words.
 
 Audience: People feeling lonely or emotionally distressed in India (English readers).
 
@@ -94,7 +94,8 @@ export type ArticleGeneratorLanguage = "hi" | "en";
 export async function generateArticle(
   topic: string,
   categoryHint?: string,
-  language: ArticleGeneratorLanguage = "hi"
+  language: ArticleGeneratorLanguage = "hi",
+  targetWordCount?: number
 ): Promise<GeneratedArticle | null> {
   if (!process.env.GEMINI_API_KEY) {
     throw new Error("GEMINI_API_KEY is not set in environment");
@@ -102,10 +103,23 @@ export async function generateArticle(
 
   const promptTemplate =
     language === "en" ? ARTICLE_PROMPT_EN : ARTICLE_PROMPT_HI;
-  const fullPrompt = promptTemplate.replace("{TOPIC}", topic).replace(
-    "**{TOPIC}**",
-    categoryHint ? `**${topic}** (Category: ${categoryHint})` : `**${topic}**`
-  );
+
+  const safeWordCount = (() => {
+    if (!targetWordCount || Number.isNaN(targetWordCount)) return "1200-1500";
+    const clamped = Math.max(500, Math.min(targetWordCount, 3000));
+    // allow a bit of range so model has flexibility
+    const min = Math.round(clamped * 0.85);
+    const max = Math.round(clamped * 1.15);
+    return `${min}-${max}`;
+  })();
+
+  const fullPrompt = promptTemplate
+    .replace("{TOPIC}", topic)
+    .replace(
+      "**{TOPIC}**",
+      categoryHint ? `**${topic}** (Category: ${categoryHint})` : `**${topic}**`
+    )
+    .replace("{WORD_COUNT}", safeWordCount);
 
   const genAI = getGemini();
   const model = genAI.getGenerativeModel({
