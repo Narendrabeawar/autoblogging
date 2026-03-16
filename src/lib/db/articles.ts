@@ -112,7 +112,7 @@ function shuffle<T>(arr: T[]): T[] {
 
 /** All (or many) published articles for hero ticker, shuffled randomly. */
 export async function getHeroTickerArticles(
-  limit = 60,
+  limit = 200,
   language: ArticleLanguage = "hi"
 ): Promise<{ title: string; slug: string; featuredImage: string | null }[]> {
   const articles = await getPublishedArticles(limit, language);

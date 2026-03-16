@@ -11,12 +11,10 @@ import { getPublishedArticles, getHeroTickerArticles } from "@/lib/db/articles";
 
 const EN_BASE = "/en";
 
-export const revalidate = 1800;
-
 export default async function EnHome() {
   const [featuredArticles, tickerArticles] = await Promise.all([
     getPublishedArticles(6, "en"),
-    getHeroTickerArticles(40, "en"),
+    getHeroTickerArticles(200, "en"),
   ]);
   const source = tickerArticles.length > 0 ? tickerArticles : featuredArticles;
   const trendingItems = source.map((a) => ({

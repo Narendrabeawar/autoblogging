@@ -8,10 +8,8 @@ import { FeaturedArticles } from "@/app/home/featured-articles";
 import { Hero } from "@/components/home/hero";
 import { getHeroTickerArticles } from "@/lib/db/articles";
 
-export const revalidate = 1800;
-
 export default async function Home() {
-  const tickerArticles = await getHeroTickerArticles(40, "hi");
+  const tickerArticles = await getHeroTickerArticles(200, "hi");
   const trendingItems = tickerArticles.map((a) => ({
     title: a.title,
     href: `/articles/${encodeURIComponent(a.slug)}`,
