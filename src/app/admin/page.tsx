@@ -18,9 +18,11 @@ export default async function AdminDashboardPage() {
   } catch {
     loadError = true;
     stats = {
+      totalArticles: 0,
       publishedArticles: 0,
       totalViews: 0,
       newsletterCount: 0,
+      topArticleIds: [],
     };
   }
 

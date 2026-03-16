@@ -20,6 +20,7 @@ export function ArticleHelpful({ articleSlug, className }: ArticleHelpfulProps) 
       const stored = JSON.parse(
         localStorage.getItem(STORAGE_KEY) ?? "{}"
       ) as Record<string, "yes" | "no">;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVote(stored[articleSlug] ?? null);
     } catch {
       /* ignore */

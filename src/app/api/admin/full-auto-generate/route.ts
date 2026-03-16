@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
       status: string;
       error?: string;
       both?: boolean;
+      enSlug?: string;
     }[] = [];
 
     for (let i = 0; i < topics.length; i++) {

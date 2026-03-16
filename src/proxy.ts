@@ -9,7 +9,7 @@ export async function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(LOCALE_HEADER, locale);
 
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request: { headers: requestHeaders },
   });
 

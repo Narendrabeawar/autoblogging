@@ -77,7 +77,7 @@ export function ArticleSidebar({
         >
           <h2
             id="sidebar-popular-heading"
-            className="flex items-center gap-2 text-sm font-semibold text-foreground mb-4"
+            className="flex items-center gap-2 text-base font-semibold text-emerald-900 dark:text-emerald-200 mb-4"
           >
             <TrendingUp className="size-4 text-primary" aria-hidden />
             {popularLabel}
@@ -87,7 +87,7 @@ export function ArticleSidebar({
               <li key={p.slug}>
                 <Link
                   href={articleHref(p.slug)}
-                  className="group flex gap-3 rounded-lg px-2 py-2.5 -mx-2 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                  className="group flex gap-3 rounded-lg px-2 py-2.5 -mx-2 text-base text-emerald-900 dark:text-emerald-200 transition-colors hover:bg-muted/50 hover:text-emerald-950 dark:hover:text-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                 >
                   <span
                     className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary tabular-nums"
@@ -95,7 +95,7 @@ export function ArticleSidebar({
                   >
                     {i + 1}
                   </span>
-                  <span className="line-clamp-2 group-hover:text-foreground">
+                  <span className="line-clamp-2">
                     {p.title}
                   </span>
                 </Link>
