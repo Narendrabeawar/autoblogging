@@ -12,7 +12,7 @@ import { RelatedArticles } from "@/components/article/related-articles";
 import { ReadingProgress } from "@/components/article/reading-progress";
 import { AdSense } from "@/components/ads/adsense";
 import { AffiliateSection } from "@/components/ads/affiliate-section";
-import { getArticleBySlug, getRelatedArticles, hasEnglishVersion, getEnglishVersionSlug, getPublishedArticleSlugs } from "@/lib/db/articles";
+import { getArticleBySlug, getRelatedArticles, hasEnglishVersion, getEnglishVersionSlug, getPublishedArticleSlugs, getPublishedArticles } from "@/lib/db/articles";
 import { ArticleSchema } from "@/components/seo/article-schema";
 import { ArticleViewTracker } from "@/components/article/article-view-tracker";
 import { getTopArticlesByViews } from "@/lib/db/analytics";
@@ -99,7 +99,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     notFound();
   }
 
-  const [relatedArticles, popular, enSlug] = await Promise.all([
+  const [relatedArticles, popularByViews, enSlug, recentHi] = await Promise.all([
     getRelatedArticles(
       article.slug,
       article.category_id,
@@ -107,7 +107,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     ),
     getTopArticlesByViews(5),
     getEnglishVersionSlug(article.slug),
+    getPublishedArticles(5, "hi"),
   ]);
+
+  const popular =
+    popularByViews.length > 0
+      ? popularByViews
+      : recentHi.map((a) => ({ slug: a.slug, title: a.title }));
 
   return (
     <>
