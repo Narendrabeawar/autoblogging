@@ -80,10 +80,7 @@ export async function getPublishedArticles(
     .order("published_at", { ascending: false })
     .limit(limit);
 
-  if (error) {
-    console.error("Error fetching articles:", error);
-    return [];
-  }
+  if (error) return [];
 
   const getCat = (c: unknown) =>
     Array.isArray(c) ? c[0] : c;
@@ -115,7 +112,7 @@ function shuffle<T>(arr: T[]): T[] {
 
 /** All (or many) published articles for hero ticker, shuffled randomly. */
 export async function getHeroTickerArticles(
-  limit = 200,
+  limit = 60,
   language: ArticleLanguage = "hi"
 ): Promise<{ title: string; slug: string; featuredImage: string | null }[]> {
   const articles = await getPublishedArticles(limit, language);

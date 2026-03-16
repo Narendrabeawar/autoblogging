@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Sparkles, ArrowLeft } from "lucide-react";
@@ -15,6 +15,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+interface CategoryOption {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export default function GenerateArticlePage() {
   const [topic, setTopic] = useState("");
   const [categorySlug, setCategorySlug] = useState("loneliness");
@@ -22,9 +28,68 @@ export default function GenerateArticlePage() {
   const [generateImage, setGenerateImage] = useState(false);
   const [targetWords, setTargetWords] = useState<string>("");
   const [autoPublish, setAutoPublish] = useState(false);
+  const [categories, setCategories] = useState<CategoryOption[]>([
+    { id: "loneliness", name: "Loneliness", slug: "loneliness" },
+    { id: "breakup", name: "Breakup", slug: "breakup" },
+    { id: "relationships", name: "Relationships", slug: "relationships" },
+    { id: "friendship", name: "Friendship", slug: "friendship" },
+    { id: "self-improvement", name: "Self Improvement", slug: "self-improvement" },
+    { id: "mental-strength", name: "Mental Strength", slug: "mental-strength" },
+    { id: "motivation", name: "Motivation", slug: "motivation" },
+    { id: "life-advice", name: "Life Advice", slug: "life-advice" },
+  ]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadCategories() {
+      try {
+        const res = await fetch("/api/admin/categories");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled && Array.isArray(data.categories)) {
+          setCategories((prev) => {
+            // merge existing defaults with server categories (avoid duplicates)
+            const bySlug = new Map<string, CategoryOption>();
+            for (const c of prev) bySlug.set(c.slug, c);
+            for (const c of data.categories as CategoryOption[]) {
+              bySlug.set(c.slug, c);
+            }
+            return Array.from(bySlug.values());
+          });
+        }
+      } catch {
+        // ignore – fall back to defaults
+      }
+    }
+    loadCategories();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function handleAddCategory() {
+    const name = window.prompt("New category name?");
+    if (!name) return;
+    try {
+      const res = await fetch("/api/admin/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.category) {
+        alert(data.error ?? "Failed to create category");
+        return;
+      }
+      setCategories((prev) => [...prev, data.category]);
+      setCategorySlug(data.category.slug);
+    } catch {
+      alert("Something went wrong while creating category");
+    }
+  }
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
@@ -122,22 +187,31 @@ export default function GenerateArticlePage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="category" className="text-sm font-medium">Category</Label>
-              <select
-                id="category"
-                value={categorySlug}
-                onChange={(e) => setCategorySlug(e.target.value)}
-                className="h-11 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-              >
-                <option value="loneliness">Loneliness</option>
-                <option value="breakup">Breakup</option>
-                <option value="relationships">Relationships</option>
-                <option value="friendship">Friendship</option>
-                <option value="self-improvement">Self Improvement</option>
-                <option value="mental-strength">Mental Strength</option>
-                <option value="motivation">Motivation</option>
-                <option value="life-advice">Life Advice</option>
-              </select>
+              <Label htmlFor="category" className="text-sm font-medium">
+                Category
+              </Label>
+              <div className="flex gap-2">
+                <select
+                  id="category"
+                  value={categorySlug}
+                  onChange={(e) => setCategorySlug(e.target.value)}
+                  className="h-11 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat.slug} value={cat.slug}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="whitespace-nowrap"
+                  onClick={handleAddCategory}
+                >
+                  + New
+                </Button>
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="targetWords" className="text-sm font-medium">
