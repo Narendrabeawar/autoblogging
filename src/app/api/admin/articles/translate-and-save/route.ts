@@ -83,7 +83,6 @@ export async function POST(request: NextRequest) {
       category_id: article.category_id,
       status: isPublished ? "published" : "draft",
       published_at: isPublished ? new Date().toISOString() : null,
-      tags: article.tags ?? [],
       featured_image: article.featured_image,
       language: "en",
       original_id: article.id,
