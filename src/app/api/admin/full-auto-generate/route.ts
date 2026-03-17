@@ -6,6 +6,7 @@ import { translateArticleToEnglish } from "@/lib/ai/translate-article";
 import { findAITopics } from "@/lib/ai/trend-topic-finder";
 import { slugifyEnglish } from "@/lib/slugify";
 import { pingSitemap } from "@/lib/seo/ping-sitemap";
+import { uploadArticleImageFromDataUrl } from "@/lib/storage/article-images";
 
 function slugify(text: string): string {
   const base = slugifyEnglish(text) || "article";
@@ -107,8 +108,15 @@ export async function POST(request: NextRequest) {
 
         let featuredImage: string | null = null;
         if (generateImage) {
-          featuredImage =
+          const dataUrl =
             (await generateArticleImage(article.title, "hope")) ?? null;
+          if (dataUrl) {
+            featuredImage =
+              (await uploadArticleImageFromDataUrl(
+                dataUrl,
+                article.title
+              )) ?? null;
+          }
         }
 
         const articleSlug = slugify(article.title);

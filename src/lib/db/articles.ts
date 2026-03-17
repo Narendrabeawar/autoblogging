@@ -100,23 +100,13 @@ export async function getPublishedArticles(
   });
 }
 
-/** Shuffle array in place (Fisher–Yates). */
-function shuffle<T>(arr: T[]): T[] {
-  const out = [...arr];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
-
-/** All (or many) published articles for hero ticker, shuffled randomly. */
+/** All (or many) published articles for hero ticker (latest first). */
 export async function getHeroTickerArticles(
-  limit = 80,
+  limit = 10,
   language: ArticleLanguage = "hi"
 ): Promise<{ title: string; slug: string; featuredImage: string | null }[]> {
   const articles = await getPublishedArticles(limit, language);
-  return shuffle(articles).map((a) => ({
+  return articles.map((a) => ({
     title: a.title,
     slug: a.slug,
     featuredImage: a.featuredImage ?? null,

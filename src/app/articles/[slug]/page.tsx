@@ -52,11 +52,9 @@ export async function generateMetadata({ params }: ArticlePageProps) {
   const description = article?.seo_description ?? article?.excerpt ?? "Read on Akelapan";
   const ogImage = article?.featured_image?.startsWith("http")
     ? article.featured_image
-    : article?.featured_image?.startsWith("data:")
-      ? undefined
-      : article?.featured_image
-        ? `${SITE_URL}${article.featured_image}`
-        : `${SITE_URL}/images/og-default.png`;
+    : article?.featured_image
+      ? `${SITE_URL}${article.featured_image}`
+      : `${SITE_URL}/images/og-default.png`;
 
   return {
     title,
@@ -195,23 +193,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <div className="lg:col-span-2 space-y-8">
               {article.featured_image && (
                 <div className="relative aspect-video w-full max-w-4xl mx-auto">
-                  {article.featured_image.startsWith("data:") ? (
-                    <img
-                      src={article.featured_image}
-                      alt={article.title}
-                      className="size-full object-cover rounded-xl"
-                    />
-                  ) : (
-                    <Image
-                      src={article.featured_image}
-                      alt={article.title}
-                      fill
-                      className="object-cover rounded-xl"
-                      priority
-                      placeholder="blur"
-                      blurDataURL={BLUR_DATA_URL}
-                    />
-                  )}
+                  <Image
+                    src={article.featured_image}
+                    alt={article.title}
+                    fill
+                    className="object-cover rounded-xl"
+                    priority
+                    placeholder="blur"
+                    blurDataURL={BLUR_DATA_URL}
+                  />
                 </div>
               )}
 

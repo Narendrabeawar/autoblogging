@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { generateArticle } from "@/lib/ai/article-generator";
 import { generateArticleImage } from "@/lib/ai/image-generator";
+import { uploadArticleImageFromDataUrl } from "@/lib/storage/article-images";
 import { translateArticleToEnglish } from "@/lib/ai/translate-article";
 import { slugifyEnglish } from "@/lib/slugify";
 
@@ -81,8 +82,13 @@ export async function POST(request: Request) {
 
     let featuredImage: string | null = null;
     if (body.generateImage) {
-      featuredImage =
+      const dataUrl =
         (await generateArticleImage(article.title, "hope")) ?? null;
+      if (dataUrl) {
+        featuredImage =
+          (await uploadArticleImageFromDataUrl(dataUrl, article.title)) ??
+          null;
+      }
     }
 
     const nowIso = new Date().toISOString();

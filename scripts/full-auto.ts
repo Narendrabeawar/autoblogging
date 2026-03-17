@@ -10,6 +10,7 @@ import { generateArticle } from "../src/lib/ai/article-generator";
 import { generateArticleImage } from "../src/lib/ai/image-generator";
 import { findAITopics } from "../src/lib/ai/trend-topic-finder";
 import { slugifyEnglish } from "../src/lib/slugify";
+import { uploadArticleImageFromDataUrl } from "../src/lib/storage/article-images";
 
 function slugify(text: string): string {
   const base = slugifyEnglish(text) || "article";
@@ -83,8 +84,15 @@ async function main() {
 
       let featuredImage: string | null = null;
       if (generateImage) {
-        featuredImage =
+        const dataUrl =
           (await generateArticleImage(article.title, "hope")) ?? null;
+        if (dataUrl) {
+          featuredImage =
+            (await uploadArticleImageFromDataUrl(
+              dataUrl,
+              article.title
+            )) ?? null;
+        }
       }
 
       const articleSlug = slugify(article.title);
