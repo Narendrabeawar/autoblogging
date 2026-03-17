@@ -205,12 +205,13 @@ export async function getEnglishVersionSlug(
 /** Get the Hindi article slug for an English article slug (for hreflang /articles/... link) */
 export async function getHindiVersionSlug(englishSlug: string): Promise<string | null> {
   const enArticle = await getArticleBySlug(englishSlug, "en");
-  if (!enArticle?.original_id) return null;
+  const originalId = (enArticle as any)?.original_id as string | null | undefined;
+  if (!originalId) return null;
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("articles")
     .select("slug")
-    .eq("id", enArticle.original_id)
+    .eq("id", originalId)
     .eq("status", "published")
     .eq("language", "hi")
     .maybeSingle();
