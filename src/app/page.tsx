@@ -9,7 +9,7 @@ import { Hero } from "@/components/home/hero";
 import { getHeroTickerArticles } from "@/lib/db/articles";
 
 export default async function Home() {
-  const tickerArticles = await getHeroTickerArticles(200, "hi");
+  const tickerArticles = await getHeroTickerArticles(80, "hi");
   const trendingItems = tickerArticles.map((a) => ({
     title: a.title,
     href: `/articles/${encodeURIComponent(a.slug)}`,

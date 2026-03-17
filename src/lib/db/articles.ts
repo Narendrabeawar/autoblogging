@@ -112,7 +112,7 @@ function shuffle<T>(arr: T[]): T[] {
 
 /** All (or many) published articles for hero ticker, shuffled randomly. */
 export async function getHeroTickerArticles(
-  limit = 200,
+  limit = 80,
   language: ArticleLanguage = "hi"
 ): Promise<{ title: string; slug: string; featuredImage: string | null }[]> {
   const articles = await getPublishedArticles(limit, language);
@@ -134,7 +134,18 @@ export async function getArticleBySlug(
       .from("articles")
       .select(
         `
-        *,
+        id,
+        title,
+        slug,
+        content,
+        excerpt,
+        seo_title,
+        seo_description,
+        featured_image,
+        published_at,
+        status,
+        language,
+        category_id,
         categories (
           id,
           name,
@@ -170,14 +181,15 @@ export async function getArticleBySlug(
 }
 
 /** Check if an English version exists for this Hindi article slug (by original_id) */
-export async function hasEnglishVersion(hindiSlug: string): Promise<boolean> {
-  const hiArticle = await getArticleBySlug(hindiSlug, "hi");
-  if (!hiArticle?.id) return false;
+export async function hasEnglishVersion(
+  hindiArticleId: string | null | undefined
+): Promise<boolean> {
+  if (!hindiArticleId) return false;
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("articles")
     .select("id")
-    .eq("original_id", hiArticle.id)
+    .eq("original_id", hindiArticleId)
     .eq("status", "published")
     .eq("language", "en")
     .maybeSingle();
@@ -185,14 +197,15 @@ export async function hasEnglishVersion(hindiSlug: string): Promise<boolean> {
 }
 
 /** Get the English article slug for a Hindi article slug (for hreflang /en/articles/... link) */
-export async function getEnglishVersionSlug(hindiSlug: string): Promise<string | null> {
-  const hiArticle = await getArticleBySlug(hindiSlug, "hi");
-  if (!hiArticle?.id) return null;
+export async function getEnglishVersionSlug(
+  hindiArticleId: string | null | undefined
+): Promise<string | null> {
+  if (!hindiArticleId) return null;
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("articles")
     .select("slug")
-    .eq("original_id", hiArticle.id)
+    .eq("original_id", hindiArticleId)
     .eq("status", "published")
     .eq("language", "en")
     .maybeSingle();

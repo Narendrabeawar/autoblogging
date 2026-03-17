@@ -56,6 +56,16 @@ export async function POST(request: NextRequest) {
       excludeTopics,
     });
 
+    const { data: allCategories } = await supabase
+      .from("categories")
+      .select("id, slug");
+    const categoryMap = new Map(
+      (allCategories ?? []).map((c: { id: string; slug: string }) => [
+        c.slug,
+        c.id,
+      ])
+    );
+
     if (topics.length === 0) {
       return Response.json(
         { error: "AI could not generate topics. Try again." },
@@ -93,11 +103,7 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        const { data: category } = await supabase
-          .from("categories")
-          .select("id")
-          .eq("slug", topic.categorySlug)
-          .single();
+        const categoryId = categoryMap.get(topic.categorySlug) ?? null;
 
         let featuredImage: string | null = null;
         if (generateImage) {
@@ -117,7 +123,7 @@ export async function POST(request: NextRequest) {
               excerpt: article.excerpt,
               seo_title: article.seo_title,
               seo_description: article.seo_description,
-              category_id: category?.id ?? null,
+              category_id: categoryId,
               status: autoPublish ? "published" : "draft",
               published_at: autoPublish ? new Date().toISOString() : null,
               tags: [],
@@ -158,7 +164,7 @@ export async function POST(request: NextRequest) {
               excerpt: translated.excerpt ?? null,
               seo_title: translated.seo_title ?? null,
               seo_description: translated.seo_description ?? null,
-              category_id: category?.id ?? null,
+              category_id: categoryId,
               status: autoPublish ? "published" : "draft",
               published_at: autoPublish ? new Date().toISOString() : null,
               tags: [],
@@ -202,7 +208,7 @@ export async function POST(request: NextRequest) {
             excerpt: article.excerpt,
             seo_title: article.seo_title,
             seo_description: article.seo_description,
-            category_id: category?.id ?? null,
+            category_id: categoryId,
             status: autoPublish ? "published" : "draft",
             published_at: autoPublish ? new Date().toISOString() : null,
             tags: [],

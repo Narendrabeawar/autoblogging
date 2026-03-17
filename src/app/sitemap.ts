@@ -7,7 +7,7 @@ import { CATEGORIES } from "@/lib/constants";
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://akelapan.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const articles = await getPublishedArticleSlugsAllLanguages();
+  const articles = await getPublishedArticleSlugsAllLanguages(2000);
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1 },

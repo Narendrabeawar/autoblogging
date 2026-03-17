@@ -5,7 +5,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArticlesListClient } from "./articles-list-client";
 
-export default async function AdminArticlesPage() {
+const PAGE_SIZE = 50;
+
+interface AdminArticlesPageProps {
+  searchParams?: Promise<{ page?: string }>;
+}
+
+export default async function AdminArticlesPage({
+  searchParams,
+}: AdminArticlesPageProps) {
+  const params = (await searchParams) ?? {};
+  const currentPage = Math.max(
+    1,
+    Number.parseInt(params.page ?? "1", 10) || 1
+  );
+  const from = (currentPage - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
   const supabase = await createClient();
   const { data: articles } = await supabase
     .from("articles")
@@ -21,7 +37,10 @@ export default async function AdminArticlesPage() {
       categories (name, slug)
     `
     )
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  const hasNextPage = (articles?.length ?? 0) === PAGE_SIZE;
 
   return (
     <div className="space-y-8">
@@ -43,7 +62,38 @@ export default async function AdminArticlesPage() {
       </div>
 
       {articles?.length ? (
-        <ArticlesListClient articles={articles} />
+        <>
+          <ArticlesListClient articles={articles} />
+          <div className="flex items-center justify-between pt-4">
+            <Button
+              variant="outline"
+              asChild
+              disabled={currentPage <= 1}
+            >
+              <Link
+                href={
+                  currentPage <= 2
+                    ? "/admin/articles"
+                    : `/admin/articles?page=${currentPage - 1}`
+                }
+              >
+                Previous
+              </Link>
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              Page {currentPage}
+            </span>
+            <Button
+              variant="outline"
+              asChild
+              disabled={!hasNextPage}
+            >
+              <Link href={`/admin/articles?page=${currentPage + 1}`}>
+                Next
+              </Link>
+            </Button>
+          </div>
+        </>
       ) : (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">

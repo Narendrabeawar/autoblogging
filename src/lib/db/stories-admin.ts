@@ -14,12 +14,27 @@ export interface UserStoryAdmin {
   admin_notes: string | null;
 }
 
-export async function getAllStoriesForAdmin() {
+export async function getAllStoriesForAdmin(limit = 200) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("user_stories")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select(
+      `
+      id,
+      title,
+      content,
+      author_name,
+      author_display,
+      consent_given,
+      status,
+      theme,
+      created_at,
+      published_at,
+      admin_notes
+    `
+    )
+    .order("created_at", { ascending: false })
+    .limit(limit);
 
   if (error) return [];
   return (data ?? []) as UserStoryAdmin[];

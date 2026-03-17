@@ -11,12 +11,28 @@ import {
 import { getAllStoriesForAdmin } from "@/lib/db/stories-admin";
 import { StoryActions } from "./story-actions";
 
-export default async function AdminStoriesPage() {
-  const stories = await getAllStoriesForAdmin();
+const PAGE_SIZE = 50;
+
+interface AdminStoriesPageProps {
+  searchParams?: Promise<{ page?: string }>;
+}
+
+export default async function AdminStoriesPage({
+  searchParams,
+}: AdminStoriesPageProps) {
+  const params = (await searchParams) ?? {};
+  const currentPage = Math.max(
+    1,
+    Number.parseInt(params.page ?? "1", 10) || 1
+  );
+
+  const stories = await getAllStoriesForAdmin(PAGE_SIZE);
 
   const pending = stories.filter((s) => s.status === "pending");
   const approved = stories.filter((s) => s.status === "approved");
   const rejected = stories.filter((s) => s.status === "rejected");
+
+  const hasNextPage = stories.length === PAGE_SIZE;
 
   return (
     <div className="space-y-8">
@@ -139,6 +155,36 @@ export default async function AdminStoriesPage() {
           </p>
         </div>
       )}
+
+      <div className="flex items-center justify-between pt-4">
+        <Button
+          variant="outline"
+          asChild
+          disabled={currentPage <= 1}
+        >
+          <Link
+            href={
+              currentPage <= 2
+                ? "/admin/stories"
+                : `/admin/stories?page=${currentPage - 1}`
+            }
+          >
+            Previous
+          </Link>
+        </Button>
+        <span className="text-sm text-muted-foreground">
+          Page {currentPage}
+        </span>
+        <Button
+          variant="outline"
+          asChild
+          disabled={!hasNextPage}
+        >
+          <Link href={`/admin/stories?page=${currentPage + 1}`}>
+            Next
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }

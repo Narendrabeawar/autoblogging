@@ -14,7 +14,7 @@ const EN_BASE = "/en";
 export default async function EnHome() {
   const [featuredArticles, tickerArticles] = await Promise.all([
     getPublishedArticles(6, "en"),
-    getHeroTickerArticles(200, "en"),
+    getHeroTickerArticles(80, "en"),
   ]);
   const source = tickerArticles.length > 0 ? tickerArticles : featuredArticles;
   const trendingItems = source.map((a) => ({

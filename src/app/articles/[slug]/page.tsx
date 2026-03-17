@@ -39,10 +39,10 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://akelapan.com";
 export async function generateMetadata({ params }: ArticlePageProps) {
   const { slug } = await params;
   const s = normalizeSlug(slug);
-  const [article, hasEn, enSlug] = await Promise.all([
-    getArticleBySlug(s),
-    hasEnglishVersion(s),
-    getEnglishVersionSlug(s),
+  const article = await getArticleBySlug(s);
+  const [hasEn, enSlug] = await Promise.all([
+    hasEnglishVersion(article?.id),
+    getEnglishVersionSlug(article?.id),
   ]);
   const hiUrl = `${SITE_URL}/articles/${encodeURIComponent(s)}`;
   const languages: Record<string, string> = { "hi-IN": hiUrl };
@@ -106,7 +106,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       5
     ),
     getTopArticlesByViews(5),
-    getEnglishVersionSlug(article.slug),
+    getEnglishVersionSlug(article.id),
     getPublishedArticles(5, "hi"),
   ]);
 
